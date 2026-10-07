@@ -12,3 +12,4 @@ __pycache__/
 # Editor and operating-system files
 .DS_Store
 .vscode/
+.data/
