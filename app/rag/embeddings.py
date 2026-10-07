@@ -1,44 +1,32 @@
-"""Local sentence-transformers embedding backend."""
+"""Gemini embedding backend."""
 
 from __future__ import annotations
 
 from collections.abc import Sequence
 
-from sentence_transformers import SentenceTransformer
+from google import genai
+from google.genai import types
+
+from app.config import get_settings
 
 
-DEFAULT_EMBEDDING_MODEL = (
-    "sentence-transformers/all-MiniLM-L6-v2"
-)
+DEFAULT_EMBEDDING_MODEL = "gemini-embedding-001"
 
 
-class LocalEmbeddingModel:
-    """Lazy, reusable local embedding model.
-
-    The model is loaded only on the first embedding request
-    and then reused.
-
-    No external LLM/API call is involved.
-    """
+class GeminiEmbeddingModel:
+    """Gemini API embedding model."""
 
     def __init__(
         self,
         model_name: str = DEFAULT_EMBEDDING_MODEL,
-        model: SentenceTransformer | None = None,
+        client=None,
     ) -> None:
+        settings = get_settings()
+
         self.model_name = model_name
-        self._model = model
-
-    @property
-    def model(self) -> SentenceTransformer:
-        """Return the cached model, loading it lazily."""
-
-        if self._model is None:
-            self._model = SentenceTransformer(
-                self.model_name
-            )
-
-        return self._model
+        self._client = client or genai.Client(
+            api_key=settings.gemini_api_key
+        )
 
     def embed_documents(
         self,
@@ -49,31 +37,38 @@ class LocalEmbeddingModel:
         if not texts:
             return []
 
-        vectors = self.model.encode(
-            list(texts),
-            normalize_embeddings=True,
-            convert_to_numpy=True,
-            show_progress_bar=False,
+        response = self._client.models.embed_content(
+            model=self.model_name,
+            contents=list(texts),
+            config=types.EmbedContentConfig(
+                task_type="RETRIEVAL_DOCUMENT",
+                output_dimensionality=768,
+            ),
         )
 
-        return vectors.tolist()
+        return [
+            list(embedding.values)
+            for embedding in response.embeddings
+        ]
 
     def embed_query(
         self,
         text: str,
     ) -> list[float]:
-        """Generate an embedding for a query."""
+        """Generate an embedding for a search query."""
 
         if not text.strip():
             raise ValueError(
                 "Query text cannot be empty."
             )
 
-        vector = self.model.encode(
-            text,
-            normalize_embeddings=True,
-            convert_to_numpy=True,
-            show_progress_bar=False,
+        response = self._client.models.embed_content(
+            model=self.model_name,
+            contents=text,
+            config=types.EmbedContentConfig(
+                task_type="RETRIEVAL_QUERY",
+                output_dimensionality=768,
+            ),
         )
 
-        return vector.tolist()
+        return list(response.embeddings[0].values)

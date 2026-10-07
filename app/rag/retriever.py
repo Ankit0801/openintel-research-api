@@ -9,7 +9,7 @@ from typing import Any
 
 from app.models import Evidence
 from app.rag.chunker import EvidenceChunker
-from app.rag.embeddings import LocalEmbeddingModel
+from app.rag.embeddings import GeminiEmbeddingModel
 from app.rag.vector_store import ChromaVectorStore
 
 
@@ -34,7 +34,7 @@ class RAGRetriever:
     def __init__(
         self,
         *,
-        embedding_model: LocalEmbeddingModel | None = None,
+        embedding_model: GeminiEmbeddingModel | None = None,
         vector_store: ChromaVectorStore | None = None,
         chunker: EvidenceChunker | None = None,
         persist_directory: str | Path = ".data/chroma",
@@ -42,7 +42,7 @@ class RAGRetriever:
     ) -> None:
         self.embedding_model = (
             embedding_model
-            or LocalEmbeddingModel()
+            or GeminiEmbeddingModel()
         )
 
         self.vector_store = (
