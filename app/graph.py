@@ -1,7 +1,10 @@
 """LangGraph workflow for OpenIntel research."""
 
+import logging
 from operator import add
 from typing import Annotated, TypedDict
+
+logger = logging.getLogger(__name__)
 
 from langgraph.graph import END, START, StateGraph
 
@@ -192,38 +195,31 @@ def arxiv_retrieval_node(
         }
 
 
-def openalex_retrieval_node(
-    state: ResearchState,
-) -> dict:
-    """Retrieve OpenAlex evidence using the generated query."""
+def openalex_retrieval_node(state: ResearchState) -> dict:
+    query = state["source_queries"].get("openalex", "")
 
-    if "openalex" not in state["selected_sources"]:
-        return {
-            "raw_evidence": [],
-        }
+    if not query:
+        return {"raw_evidence": []}
+
+    client = OpenAlexClient()
 
     try:
-        client = OpenAlexClient()
-
-        query = state["source_queries"]["openalex"]
-
         evidence = client.search_works(
             query=query,
             per_page=5,
         )
 
-        return {
-            "raw_evidence": evidence,
-        }
+        return {"raw_evidence": evidence}
 
-    except (RuntimeError, ValueError) as error:
+    except Exception as exc:
+        error = f"OpenAlex retrieval failed: {exc}"
+
+        logger.warning(error)
+
         return {
             "raw_evidence": [],
-            "errors": [
-                f"OpenAlex retrieval failed: {error}"
-            ],
+            "errors": [error],
         }
-
 
 def nvd_retrieval_node(
     state: ResearchState,

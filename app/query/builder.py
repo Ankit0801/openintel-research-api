@@ -34,6 +34,20 @@ class QueryBuilder:
     def _github_query(question: str) -> str:
         """Build a GitHub repository search query."""
 
+        normalized = question.lower()
+
+        if "retrieval-augmented generation" in normalized or "rag" in normalized:
+            return "RAG retrieval augmented generation"
+
+        if "ai coding" in normalized or "coding agent" in normalized:
+            return "AI coding agents software development"
+
+        if "ai agent" in normalized:
+            return "AI agents agentic AI autonomous agents"
+
+        if "cybersecurity" in normalized or "security" in normalized:
+            return "AI cybersecurity machine learning security"
+
         return question
 
     @staticmethod
@@ -42,11 +56,27 @@ class QueryBuilder:
 
         normalized = question.lower()
 
+        if (
+            "retrieval-augmented generation" in normalized
+            or "rag" in normalized
+        ):
+            return (
+                '"retrieval augmented generation" '
+                'OR "retrieval-augmented generation"'
+            )
+
         if "open source" in normalized and "ai agent" in normalized:
             return (
                 '"AI agents" OR '
                 '"agentic AI" OR '
                 '"autonomous agents"'
+            )
+
+        if "ai coding" in normalized or "coding agent" in normalized:
+            return (
+                '"AI coding agents" OR '
+                '"AI code assistants" OR '
+                '"software engineering agents"'
             )
 
         if "ai agent" in normalized:
@@ -64,15 +94,20 @@ class QueryBuilder:
 
         normalized = question.lower()
 
+        if (
+            "retrieval-augmented generation" in normalized
+            or "rag" in normalized
+        ):
+            return "retrieval augmented generation"
+
         if "open source" in normalized and "ai agent" in normalized:
-            return (
-                "agentic artificial intelligence"
-            )
+            return "agentic artificial intelligence"
+
+        if "ai coding" in normalized or "coding agent" in normalized:
+            return "AI coding agents software engineering"
 
         if "ai agent" in normalized:
-            return (
-                "agentic artificial intelligence"
-            )
+            return "agentic artificial intelligence"
 
         return question
 
@@ -82,7 +117,19 @@ class QueryBuilder:
 
         normalized = question.lower()
 
+        if "prompt injection" in normalized:
+            return "prompt injection"
+
+        if "cybersecurity" in normalized:
+            return "artificial intelligence cybersecurity"
+
+        if "security" in normalized:
+            return "artificial intelligence security"
+
         if "ai agent" in normalized:
             return "AI agent"
+
+        if "retrieval-augmented generation" in normalized or "rag" in normalized:
+            return "retrieval augmented generation"
 
         return question
