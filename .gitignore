@@ -1,0 +1,14 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Python virtual environments and generated files
+langgraph_env3/
+langraph_env3/
+__pycache__/
+*.py[cod]
+
+# Editor and operating-system files
+.DS_Store
+.vscode/
