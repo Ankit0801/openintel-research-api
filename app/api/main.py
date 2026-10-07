@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.graph import build_research_graph
 from app.models import ResearchRequest, ResearchReport
@@ -18,6 +19,15 @@ app = FastAPI(
     title="OpenIntel Research API",
     description="Evidence-backed multi-agent research API",
     version="1.0.0",
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
