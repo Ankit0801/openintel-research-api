@@ -38,7 +38,7 @@ class RAGRetriever:
         vector_store: ChromaVectorStore | None = None,
         chunker: EvidenceChunker | None = None,
         persist_directory: str | Path = ".data/chroma",
-        collection_name: str = "openintel_evidence",
+        collection_name: str = "openintel_evidence_gemini_v2",
     ) -> None:
         self.embedding_model = (
             embedding_model
