@@ -14,7 +14,7 @@ class ChromaVectorStore:
     def __init__(
         self,
         persist_directory: str | Path = ".data/chroma",
-        collection_name: str = "openintel_evidence_gemini",
+        collection_name: str = "openintel_evidence_gemini_v2",
     ) -> None:
         self.persist_directory = Path(
             persist_directory
